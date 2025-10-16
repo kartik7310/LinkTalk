@@ -5,8 +5,10 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import express from "express";
 import logger from "./utils/logger.js";
+import AuthRoute from "./routes/authRoute.js"
 import errorHandler from "./middlewares/ErrorHandler.js";
 import connectionDatabase from "./config/db.js";
+
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -29,6 +31,7 @@ app.get("/", (req, res) => {
   res.send("Hello TypeScript Backend!");
 });
 
+app.use('/api/v1/auth',AuthRoute)
 app.use(errorHandler);
 
 async function startServer() {
