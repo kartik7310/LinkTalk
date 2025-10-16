@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import logger from "./utils/logger.js";
 import errorHandler from "./middlewares/ErrorHandler.js";
+import connectionDatabase from "./config/db.js";
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -32,6 +33,7 @@ app.use(errorHandler);
 
 async function startServer() {
   try {
+    await connectionDatabase()
     logger.info("🟢 Connected to DB");
     app.listen(PORT, () =>
       logger.info(`🚀 Server is running at http://localhost:${PORT}`)
