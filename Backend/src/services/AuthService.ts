@@ -3,10 +3,11 @@
   import { CustomError } from "../utils/CustomError.js";
   import bcrypt from "bcryptjs";
   import { LoginInput, RegisterInput } from "../Schemas/Auth.js";
+import generateUniqueConnectCode from "../utils/generateUniqueConnectCode.js";
   export const AuthService = {
     registerUser: async (data:RegisterInput) => {
       try {
-        const { email, password, confirmPassword, connectCode, userName, fullName } = data;
+        const { email, password, confirmPassword, userName, fullName } = data;
 
         if (password !== confirmPassword) {
           throw new CustomError("Passwords do not match", 400);
@@ -20,17 +21,17 @@
 
     
         const hashedPassword = await bcrypt.hash(password, 10);
-
-    
+        const connectUniqueCode = await generateUniqueConnectCode()
+        
         const user = await User.create({
           fullName,
           userName,
           email,
           password: hashedPassword,
-          connectCode
+          connectCode:connectUniqueCode
         });
     const userObj = user.toObject();
-      const { password: _password,connectCode:_connectCode, ...userData } = userObj;
+      const { password: _password, ...userData } = userObj;
 
 
       return userData;
@@ -55,10 +56,9 @@
       throw new CustomError("Invalid email or password", 401);
     }
 
-    const userObj = user.toObject();
-    const { password: _password, connectCode: _connectCode, ...userData } = userObj;
-
-    return userData;
+           const userObj = user.toObject();
+      const { password: _password, ...userData } = userObj;
+      return userData
   },
 
     getUserById: async (userId: string) => {

@@ -15,7 +15,7 @@
         }
 
         const data = parsed.data;
-        console.log("data", data);
+       
 
         const user = await AuthService.registerUser(data);
 

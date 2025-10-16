@@ -7,7 +7,6 @@ export const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
- connectCode:z.string().min(6, "connectCode must be at least 6 characters"),
   
 });
  export type RegisterInput = z.infer<typeof registerSchema>;
