@@ -1,0 +1,17 @@
+
+# Node modules and env
+/node_modules
+.env
+logs/
+*.log
+
+# Prisma artifacts
+/prisma/dev.db
+/prisma/dev.db-journal
+
+# OS/system files
+.DS_Store
+Thumbs.db
+
+# Compiled TypeScript output (if any)
+/dist
