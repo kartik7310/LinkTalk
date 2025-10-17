@@ -1,3 +1,4 @@
+import { User } from "lucide-react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -15,7 +16,7 @@ interface AuthState {
   setUser: (user: User) => void;
   logout: () => void;
 }
-
+            
 export const userAuthStore = create<AuthState>()(
   persist(
     (set) => ({
@@ -23,9 +24,12 @@ export const userAuthStore = create<AuthState>()(
       isAuthenticated: false,
       setUser: (user) => set({ user, isAuthenticated: true }),
       logout: () => set({ user: null, isAuthenticated: false }),
+      
     }),
     {
-      name: "auth-storage", // Key name for localStorage
+      name: "auth-storage",
     }
   )
 );
+
+console.log("data",User);

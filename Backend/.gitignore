@@ -8,7 +8,7 @@ logs/
 # Prisma artifacts
 /prisma/dev.db
 /prisma/dev.db-journal
-
+cd
 # OS/system files
 .DS_Store
 Thumbs.db

@@ -30,10 +30,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitch }) => {
     const mutation = useMutation({
         mutationFn: authService.login,
         onSuccess: (data) => {
-            const { user } =  data;
+
+            
+            const user =  data.data;
             setUser(user);
             toast.success("Login successfull!")
-            return navigate('/');
+            return navigate('/chat');
         },
         onError: (error:any) => {
             const msg = error.response?.data?.message || "Login failed"
