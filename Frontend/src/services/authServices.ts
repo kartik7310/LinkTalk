@@ -18,6 +18,6 @@ export const authService = {
     },
     
     logout: async () => {
-        await apiClient.post("/auth/logout");
+        await apiClient.get("/auth/logout");
     }
 }
