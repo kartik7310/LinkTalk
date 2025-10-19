@@ -8,7 +8,7 @@ import logger from "./utils/logger.js";
 import AuthRoute from "./routes/authRoute.js"
 import errorHandler from "./middlewares/ErrorHandler.js";
 import connectionDatabase from "./config/db.js";
-
+import conversation from "./routes/conversationRoute.js"
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -32,6 +32,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api/v1/auth',AuthRoute)
+app.use('/api/v1/chat',conversation)
 app.use(errorHandler);
 
 async function startServer() {

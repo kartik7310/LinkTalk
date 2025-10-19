@@ -1,19 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES2022",             // Updated to ES2022 for better Node.js support
-    "module": "NodeNext",           
+    "target": "es2020",
+    "module": "NodeNext",
     "rootDir": "./src",
     "outDir": "./dist",
-    "types": ["node"],
-    "lib": ["ES2022"],              // Match with target
+    "types": ["node", "express"],
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "lib": ["es2020"],
     "strict": true,
-    "esModuleInterop": true,         
-    "moduleResolution": "NodeNext",  // Changed to match (case sensitivity)
-    "skipLibCheck": true,
-    "resolveJsonModule": true,      // Useful for importing JSON
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true
+    "esModuleInterop": true,
+    "moduleResolution": "nodenext",
+    "skipLibCheck": true
   },
-  "include": ["src/**/*"],          // More specific
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

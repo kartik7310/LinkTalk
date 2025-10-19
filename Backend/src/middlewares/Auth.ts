@@ -30,13 +30,13 @@
       }
 
     
-      const decoded = Jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+      const decoded = Jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload
 
       if (!decoded || !decoded.userId) {
         throw new CustomError("Invalid token payload", 401);
       }
 
-      req.user = { userId: decoded.userId };
+      req.user = decoded
       next();
     } catch (error) {
       if (error instanceof Jwt.TokenExpiredError) {
