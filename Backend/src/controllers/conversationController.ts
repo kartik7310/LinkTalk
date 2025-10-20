@@ -38,3 +38,17 @@ static async getConversation(req:Request,res:Response,next:NextFunction){
 }
 
 export default ConversationController;
+
+
+        // return {
+        //   conversationId: conversation?._id || null,
+        //   lastMessage: conversation?.lastMessagePreview || null,
+        //   unreadCounts: conversation?.unreadCounts || {},
+        //   friend: {
+        //     id: friend._id.toString(),
+        //     username: friend.userName,
+        //     fullName: friend.fullName,
+        //     connectCode: friend.connectCode,
+     
+        //   },
+        // };

@@ -50,8 +50,10 @@ import generateUniqueConnectCode from "../utils/generateUniqueConnectCode.js";
       throw new CustomError("Invalid email or password", 401);
     }
 
-    // Verify password
+  
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log("pass",isPasswordValid);
+    
     if (!isPasswordValid) {
       throw new CustomError("Invalid email or password", 401);
     }

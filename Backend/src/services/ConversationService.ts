@@ -42,9 +42,10 @@ export const ConversationService = {
     return friend;
   },
 
-  //get friendships
+
  async getConversations(userId:string) {
-   
+
+     //get friendships
     const friendships = await FriendsShip.find({
       $or: [{ requester: userId }, { recipient: userId }],
     })
@@ -94,11 +95,11 @@ export const ConversationService = {
      
           },
         };
-        return conversationsData
+       
       })
     );
 
-    
+    return conversationsData
   } 
 }
 
