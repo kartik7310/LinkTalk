@@ -32,7 +32,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api/v1/auth',AuthRoute)
-app.use('/api/v1/chat',conversation)
+app.use('/api/v1/conversation',conversation)
 app.use(errorHandler);
 
 async function startServer() {

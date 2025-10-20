@@ -1,0 +1,17 @@
+import apiClient from "../utils/apiClient";
+
+export const conversationService={
+   fetchConversation:async()=>{
+    const response = await apiClient.get("/api/v1/conversation");
+    return response.data;
+   },
+
+  checkConnection:async(connectCode:string)=>{
+    const response = await apiClient.post("/api/v1/conversation/check-connection-code",{
+      params:{
+        connectCode
+      }
+    })
+    return response.data;
+  }
+}
