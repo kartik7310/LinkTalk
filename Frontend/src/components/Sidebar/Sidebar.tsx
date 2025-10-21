@@ -1,4 +1,3 @@
-
 import { ConversationsProvider } from "../../context/conversationContext";
 import Conversations from "./Conversations";
 import Header from "./Header";
@@ -6,14 +5,21 @@ import SearchBar from "./Searchbar";
 import UserProfile from "./UserProfile";
 
 const Sidebar: React.FC = () => {
-    return <div className="min-h-screen bg-white border-r border-gray-200 flex flex-col justify-betwen">
+  return (
+    <div className="min-h-screen bg-white border-r border-gray-200 flex flex-col justify-between">
+      {/* Top content */}
+      <div className="flex flex-col">
         <Header />
         <ConversationsProvider>
-             <SearchBar />
-            <Conversations />
+          <SearchBar />
+  <Conversations />
         </ConversationsProvider>
-        <UserProfile />
+      </div>
+
+      {/* Bottom profile */}
+      <UserProfile />
     </div>
-}
+  );
+};
 
 export default Sidebar;

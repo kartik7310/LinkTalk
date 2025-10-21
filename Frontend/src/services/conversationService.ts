@@ -2,7 +2,9 @@ import apiClient from "../utils/apiClient";
 
 export const conversationService={
    fetchConversation:async()=>{
-    const response = await apiClient.get("/api/v1/conversation");
+    const response = await apiClient.get("/conversation");
+ 
+    
     return response.data;
    },
 

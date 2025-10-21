@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import type { User } from "../store/authStore";
 import { useConversation } from "../hooks/useConversation";
 
+
 export type Conversation = {
   conversationId: string;
   friend: User & { online: boolean };
@@ -18,7 +19,7 @@ type ConversationsContextType = {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   isLoading: boolean;
-  isError: boolean;
+  isError: boolean; 
 };
 
 const ConversationsContext = createContext<ConversationsContextType | undefined>(undefined);
@@ -35,17 +36,24 @@ type ConversationsProviderProps = {
 
 export function ConversationsProvider({ children }: ConversationsProviderProps) {
   const { data, isLoading, isError } = useConversation();
+  console.log("Data",data);
+  
+  
+  
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-
+  
   useEffect(() => {
-    if (data?.data) setConversations(data.data);
+    if (data) setConversations(data);
+    console.log("conversatin after eff",conversations);
+    
   }, [data]);
 
   const filteredConversations = conversations.filter((conversation) =>
-    conversation.friend.userName.toLowerCase().includes(searchTerm.toLowerCase())
+    conversation.friend.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+ 
+  
   return (
      <ConversationsContext.Provider
       value={{
