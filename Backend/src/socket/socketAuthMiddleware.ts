@@ -23,7 +23,7 @@ export const socketAuthMiddleware = async (
 
     const user = await User.findById(decoded.userId) as IUser;
     if (!user) return next(new Error("No user found"));
-    console.log("user is middle",user);
+  
     
     socket.data.userId = user.id.toString();
     socket.data.user = user;
