@@ -36,9 +36,15 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       toast.success("Connected to server!");
     });
 
-    socketClient.on("disconnect", () => {
-      toast.warning("Disconnected from socket server");
-    });
+        socketClient.on("connect_error", (error) => {
+            console.error("Connection error", error);
+            toast.error("Socket connection error");
+        })
+
+        socketClient.on("internal_error", (error) => {
+            console.error("Connection error", error);
+            toast.error("Socket connection error");
+        })
 
     return () => {
       socketClient.disconnect();

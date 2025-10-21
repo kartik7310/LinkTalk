@@ -94,8 +94,8 @@ async function seed() {
 
 
 
-        conversation.unreadCounts.set(user2._id.toString(), lastMessage.sender.equals(user2._id) ? 0 : 1);
-        conversation.unreadCounts.set(user1._id.toString(), lastMessage.sender.equals(user1._id) ? 0 : 1);
+        conversation.unreadCounts.set(user2.id.toString(), lastMessage.sender.equals(user2.id) ? 0 : 1);
+        conversation.unreadCounts.set(user1.id.toString(), lastMessage.sender.equals(user1.id) ? 0 : 1);
         await conversation.save();
 
         await mongoose.disconnect();

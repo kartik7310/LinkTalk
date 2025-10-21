@@ -42,7 +42,7 @@
 
         
         const user = await AuthService.loginUser(data);
-        const userId = user._id.toString();
+        const userId = user.id.toString();
         const token = generateToken(userId);
 
         res.cookie("jwt", token, {

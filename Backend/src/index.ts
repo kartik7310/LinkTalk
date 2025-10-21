@@ -12,6 +12,7 @@ import errorHandler from "./middlewares/ErrorHandler.js";
 import connectionDatabase from "./config/db.js";
 import conversation from "./routes/conversationRoute.js"
 import { initlizeSocket } from "./socket.js";
+import { socketAuthMiddleware } from "./socket/socketAuthMiddleware.js";
 const app = express();
 const httpServer = createServer(app)
 dotenv.config();  
@@ -40,7 +41,9 @@ const io = new Server(httpServer, {
     pingTimeout: 60000,
 })  
 
+io.use(socketAuthMiddleware)
 //socket
+
 await initlizeSocket(io)
 
 app.get("/", (req, res) => {

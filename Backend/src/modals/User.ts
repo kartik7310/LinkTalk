@@ -1,6 +1,16 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
-const userSchema = new mongoose.Schema({
+// 1️⃣ Define a TypeScript interface for your User
+export interface IUser extends Document {
+  fullName: string;
+  userName: string;
+  email: string;
+  password: string;
+  connectCode: string;
+}
+
+// 2️⃣ Define your schema
+const userSchema = new Schema<IUser>({
   fullName: {
     type: String,
     required: true,
@@ -35,4 +45,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model("User", userSchema);
+// 3️⃣ Export both the model and the interface
+const User = mongoose.model<IUser>("User", userSchema);
+export default User;
