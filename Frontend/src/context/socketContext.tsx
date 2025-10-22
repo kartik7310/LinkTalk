@@ -19,7 +19,7 @@ export const useSocketContext = () => {
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = userAuthStore();
   const [socket, setSocket] = useState<Socket | null>(null);
-
+ 
   useEffect(() => {
     if (!user) return; // ensure user exists
 

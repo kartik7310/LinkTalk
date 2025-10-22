@@ -42,12 +42,14 @@
 
         
         const user = await AuthService.loginUser(data);
-        const userId = user.id.toString();
-        const token = generateToken(userId);
+       
+        
+        const userId = (user._id as string).toString();
+const token = generateToken(userId);
 
         res.cookie("jwt", token, {
           maxAge: 7 * 24 * 60 * 60 * 1000,
-          httpOnly: true,
+          httpOnly: true, 
           sameSite: "strict",
           secure: process.env.NODE_ENV !== "development",
         });
@@ -66,8 +68,8 @@
     static async me(req: Request, res: Response, next: NextFunction) {
       try {
       
-        const userId = req.user!.userId;
-        
+        const userId = req.user!.userId; // ✅ userId is string
+
         const userData = await AuthService.getUserById(userId);
         
         res.status(200).json({
