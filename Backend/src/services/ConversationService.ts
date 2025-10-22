@@ -2,7 +2,7 @@ import User from "../modals/User.js";
 import FriendsShip from "../modals/FriendsShip.js";
 import { CustomError } from "../utils/CustomError.js";
 import Convertation from "../modals/Convertation.js";
-
+import RedisService from "../redis/redis.js"
 interface IUser {
   _id: string;
   userName: string;
@@ -92,7 +92,7 @@ export const ConversationService = {
             username: friend.userName,
             fullName: friend.fullName,
             connectCode: friend.connectCode,
-     
+            online:await RedisService.isUserOnline(friend._id.toString())
           },
         };
        

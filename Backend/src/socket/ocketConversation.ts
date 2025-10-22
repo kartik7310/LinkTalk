@@ -20,7 +20,7 @@ export const notifyConversationOnlineStatus  =async(io:any,socket:any,online:any
                 .emit('conversation:online-status', {
                     friendId: userId,
                     username: user.userName,
-                    online,
+                    online
                 })
    })
   
