@@ -8,7 +8,7 @@ export const conversationService={
     return response.data;
    },
 
-  checkConnection:async(connectCode:string)=>{
+  checkConnectionCode:async(connectCode:string)=>{
     const response = await apiClient.post("/api/v1/conversation/check-connection-code",{
       params:{
         connectCode
