@@ -55,10 +55,11 @@ export function ConversationsProvider({
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const { socket } = useSocketContext();
-  useEffect(() => {
-    if (data) setConversations(data);
-    console.log("conversatin after eff", conversations);
-  }, [data]);
+useEffect(() => {
+  if (data) {
+    setConversations(data);
+  }
+}, [data]);
 
   const handleConverstaionOnlinStatus = ({
     friendId,
@@ -70,26 +71,43 @@ export function ConversationsProvider({
     online: boolean;
   }) => {
      setConversations((prev) => {
-            return prev.map((conversation) => {
-                if (conversation.friend.id === friendId) {
-                    if (conversation.friend.online != online) {
-                        toast.info(`${username} is ${online ? 'online' : 'offline'}`);
-                    }
 
-                    return {...conversation, friend: {...conversation.friend, online}};
+        return prev.map((conversation) => {
+            if (conversation.friend.id === friendId) {
+                if (conversation.friend.online != online) {
+                    toast.info(`${username} is ${online ? 'online' : 'offline'}`);
                 }
 
-                return conversation;
-            })
+                return {...conversation, friend: {...conversation.friend, online}};
+            }
+
+            return conversation;
+        })
         })
   };
+ 
+  useEffect(() => {
+  console.log("Conversations updated:", conversations);
+}, [conversations]);
 
+  const handleConversation = (conversation:Conversation)=>{
+   console.log("conversation:request");
+   setConversations((prev:any)=>{
+    return [...prev,conversation];
+   })
+   
+  }
+
+const handleConversationError=()=>toast.error("unable to add conversation!")
   useEffect(() => {
     socket?.on("conversation:online-status", handleConverstaionOnlinStatus);
+    socket?.on("conversation:request",handleConversation)
+    socket?.on("conversation:request:error",handleConversationError)
     return () => {
       socket?.off("conversation:online-status", handleConverstaionOnlinStatus);
+      socket?.off("conversation:request:error",handleConversationError)
     };
-  });
+  },[socket]);
   const filteredConversations = conversations.filter((conversation) =>
     conversation.friend.username
       .toLowerCase()

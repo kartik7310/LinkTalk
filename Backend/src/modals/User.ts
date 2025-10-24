@@ -2,6 +2,7 @@ import mongoose, { Document, Schema } from "mongoose";
 
 // 1️⃣ Define a TypeScript interface for your User
 export interface IUser extends Document {
+  id:string;
   fullName: string;
   userName: string;
   email: string;

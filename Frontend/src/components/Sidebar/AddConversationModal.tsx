@@ -25,13 +25,7 @@ const AddConversationModal: React.FC<AddConversationModalProps> = ({
     isOpen,
     onClose
 }) => {
-    const {
-        register,
-        handleSubmit,
-        watch,
-        reset,
-        formState: { errors }
-    } = useForm<AddConversationFormData>({
+    const { register, handleSubmit, watch, reset, formState: { errors }} = useForm<AddConversationFormData>({
         resolver: zodResolver(addConversationSchema)
     })
     const { socket } = useSocketContext();
