@@ -57,7 +57,7 @@ export function ConversationsProvider({
   const { socket } = useSocketContext();
 useEffect(() => {
   if (data) {
-    setConversations(data);
+      setConversations(Array.isArray(data) ? data : []); 
   }
 }, [data]);
 
@@ -108,7 +108,7 @@ const handleConversationError=()=>toast.error("unable to add conversation!")
       socket?.off("conversation:request:error",handleConversationError)
     };
   },[socket]);
-  const filteredConversations = conversations.filter((conversation) =>
+  const filteredConversations = conversations?.filter((conversation) =>
     conversation.friend.username
       .toLowerCase()
       .includes(searchTerm.toLowerCase())

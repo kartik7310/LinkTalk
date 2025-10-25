@@ -3,7 +3,7 @@ import ConversationItem from "./ConversationItem";
 
 
 const Conversations = () => {
-    const {filteredConversations,isError,isLoading} = useConversationsContext();
+    const {filteredConversations=[],isError,isLoading} = useConversationsContext();
      console.log("connver",filteredConversations);
      
     if (isLoading) {
@@ -16,6 +16,9 @@ const Conversations = () => {
         return <div>Something went wrong</div>
     }
 
+     if (!filteredConversations.length) {
+        return <div className="p-4 text-gray-500">No conversations yet</div>;
+    }
    return <div className="flex-1 overflow-y-auto">
         {filteredConversations.map((conversation) => <ConversationItem key={conversation.conversationId} {...conversation} />)}
        

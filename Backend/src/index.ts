@@ -11,9 +11,11 @@ import AuthRoute from "./routes/authRoute.js"
 import errorHandler from "./middlewares/ErrorHandler.js";
 import connectionDatabase from "./config/db.js";
 import conversation from "./routes/conversationRoute.js"
+import Message from "./routes/messageRoute.js"
 import { initlizeSocket } from "./socket.js";
 import { socketAuthMiddleware } from "./socket/socketAuthMiddleware.js";
 import RedisService from "../src/redis/redis.js"
+
 const app = express();
 const httpServer = createServer(app)
 dotenv.config();  
@@ -53,6 +55,8 @@ app.get("/", (req, res) => {
 
 app.use('/api/v1/auth',AuthRoute)
 app.use('/api/v1/conversation',conversation)
+app.use('/api/v1/conversation',Message)
+
 app.use(errorHandler);
 
 async function startServer() {

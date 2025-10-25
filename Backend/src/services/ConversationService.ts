@@ -39,7 +39,12 @@ export const ConversationService = {
       throw new CustomError("Friendship already exists.", 409);
     }
 
-    return friend;
+    const newFriendship = await FriendsShip.create({
+      requester: userId,
+      recipient: friend.id,
+     
+    });
+    return { friend, newFriendship };
   },
 
 

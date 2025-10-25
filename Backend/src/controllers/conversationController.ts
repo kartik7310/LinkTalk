@@ -12,15 +12,18 @@ class ConversationController {
         return next(new CustomError("User ID is required", 401));
       }
 
-      const { connectCode } = req.query;
+      const { connectCode } = req.body;
       if (!connectCode) {
         return next(new CustomError("Connect code is required", 400));
       }
 
-      await ConversationService.checkConnectCode(userId, connectCode.toString());
+    const  { friend, newFriendship }=  await ConversationService.checkConnectCode(userId, connectCode.toString());
 
+      
       return res.status(200).json({
-        message: "Connect ID is valid",
+        message: "Friend connected successfully!",
+        friend,
+        friendship: newFriendship,
       });
     } catch (error) {
       next(error); 

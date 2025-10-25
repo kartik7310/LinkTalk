@@ -25,7 +25,7 @@ const UserProfile: React.FC = () => {
       />
       <div className="flex-1 min-w-0">
         <h2 className="font-semibold truncate text-sm">
-          {user?.userName} ({user?.connectCode})
+            {user ? `${user.username} (${user.connectCode})` : "Guest"}
         </h2>
         <p className="text-xs text-gray-500">Online</p>
       </div>
