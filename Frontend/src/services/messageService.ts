@@ -17,10 +17,11 @@ interface MessagesResponse {
     nextCursor: string | undefined,
     hasNext: boolean
 }
+//http://localhost:8081/api/v1/conversation/68f5f6f43e701411451b92a3/message
 
 export const messageService = {
     fetchMessages: async (conversationId: string, cursor?: string): Promise<MessagesResponse> => {
-        const result = await apiClient.get(`/conversations/${conversationId}/messages`, {
+        const result = await apiClient.get(`/conversation/${conversationId}/message`, {
             params: {
                 cursor,
             }

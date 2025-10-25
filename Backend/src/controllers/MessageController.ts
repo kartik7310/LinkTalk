@@ -6,7 +6,7 @@ class MessageController {
     try {
       const { conversationId } = req.params;
       const { cursor } = req.query;
-      const limit = 4;
+      const limit = 20;
 
       const query: any = { conversation: conversationId };
       if (cursor) query.createdAt = { $lt: new Date(cursor as string) };
