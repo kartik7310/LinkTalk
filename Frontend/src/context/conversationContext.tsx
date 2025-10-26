@@ -50,7 +50,7 @@ export function ConversationsProvider({
   children,
 }: ConversationsProviderProps) {
   const { data, isLoading, isError } = useConversation();
-  console.log("Data", data);
+
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -98,14 +98,34 @@ useEffect(() => {
    
   }
 
+const handleConversationUpdateUnreadCounts = (conversation: {conversationId: string, unreadCounts: Record<string, number>}) => {
+        console.log("conversation:update-unread-counts", conversation)
+        setConversations((prev) => {
+            return prev.map((c) => {
+                if (c.conversationId === conversation.conversationId) {
+                    return {...c, unreadCounts: conversation.unreadCounts}
+                } else {
+                    return c;
+                }
+            })
+        })
+    }
+    
 const handleConversationError=()=>toast.error("unable to add conversation!")
+
+const handleErrorConversationMarkAsRead=()=>toast.error("unable to add conversation!")
+
   useEffect(() => {
     socket?.on("conversation:online-status", handleConverstaionOnlinStatus);
     socket?.on("conversation:request",handleConversation)
     socket?.on("conversation:request:error",handleConversationError)
+    socket?.on("conversation:mark-as-read:error",handleConversationUpdateUnreadCounts)
+    socket?.on("conversation:update-unread-counts",handleErrorConversationMarkAsRead)
     return () => {
       socket?.off("conversation:online-status", handleConverstaionOnlinStatus);
       socket?.off("conversation:request:error",handleConversationError)
+      socket?.off("conversation:update-unread-counts",handleErrorConversationMarkAsRead);
+      socket?.off("conversation:mark-as-read:error",handleConversationUpdateUnreadCounts)
     };
   },[socket]);
   const filteredConversations = conversations?.filter((conversation) =>
@@ -129,3 +149,4 @@ const handleConversationError=()=>toast.error("unable to add conversation!")
     </ConversationsContext.Provider>
   );
 }
+

@@ -8,8 +8,8 @@ import { useSocketContext } from "../../context/socketContext"
 
 
 const MessageList = () => {
-    const socket =useSocketContext()
-const user = userAuthStore()
+    const {socket} =useSocketContext()
+const {user} = userAuthStore()
 const {selectedConversation} = useConversationStore()
 
  const containerRef = useRef<HTMLDivElement|null>(null)
