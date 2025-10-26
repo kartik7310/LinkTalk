@@ -1,5 +1,5 @@
 import { leaveAllRooms } from "./socket/helper.js";
-import { conversationMarkAsRead, conversationRequest, notifyConversationOnlineStatus } from "./socket/ocketConversation.js";
+import { conversationMarkAsRead, conversationRequest, conversationSendMessage, conversationTyping, notifyConversationOnlineStatus } from "./socket/ocketConversation.js";
 import RedisService from "../src/redis/redis.js"
 
 export const initlizeSocket = async (io: any) => {
@@ -13,6 +13,8 @@ export const initlizeSocket = async (io: any) => {
       
         socket.on("conversation:request", (data:any) => conversationRequest(io, socket, data))
         socket.on("conversation:mark-as-read",(data:any)=>conversationMarkAsRead(io,socket,data))
+        socket.on("conversation:send-message",(data:any)=>conversationSendMessage(io,socket,data))
+        socket.on("conversation:typing",(data:any)=>conversationTyping(io,socket,data))
       socket.on("disconnect", async () => {
 
         await RedisService.disconnect()

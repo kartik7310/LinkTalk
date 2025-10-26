@@ -95,6 +95,11 @@ useEffect(() => {
    setConversations((prev:any)=>{
     return [...prev,conversation];
    })
+   toast.success(`You and ${conversation.friend.username} are now friends!`)
+   if(socket){
+    socket.disconnect()
+    socket.connect()
+   }
    
   }
 
@@ -115,17 +120,32 @@ const handleConversationError=()=>toast.error("unable to add conversation!")
 
 const handleErrorConversationMarkAsRead=()=>toast.error("unable to add conversation!")
 
+ const handleConversationUpdate = (conversation: Pick<Conversation, "conversationId" | "lastMessage" | "unreadCounts">) => {
+        console.log(conversation);
+        setConversations((prev) => {
+            return prev.map((c) => {
+                if (c.conversationId === conversation.conversationId) {
+                    return {...c, lastMessage: conversation.lastMessage, unreadCounts: conversation.unreadCounts}
+                }
+
+                return c;
+            })
+        });
+    }
   useEffect(() => {
     socket?.on("conversation:online-status", handleConverstaionOnlinStatus);
     socket?.on("conversation:request",handleConversation)
+    socket?.on("conversation:update-conversation",handleConversationUpdate)
     socket?.on("conversation:request:error",handleConversationError)
     socket?.on("conversation:mark-as-read:error",handleConversationUpdateUnreadCounts)
     socket?.on("conversation:update-unread-counts",handleErrorConversationMarkAsRead)
+
     return () => {
       socket?.off("conversation:online-status", handleConverstaionOnlinStatus);
       socket?.off("conversation:request:error",handleConversationError)
       socket?.off("conversation:update-unread-counts",handleErrorConversationMarkAsRead);
       socket?.off("conversation:mark-as-read:error",handleConversationUpdateUnreadCounts)
+       socket?.off("conversation:update-conversation",handleConversationUpdate)
     };
   },[socket]);
   const filteredConversations = conversations?.filter((conversation) =>

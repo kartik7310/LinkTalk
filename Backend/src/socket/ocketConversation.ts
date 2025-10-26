@@ -181,6 +181,7 @@ export const conversationSendMessage=async(io:any,socket:Socket,data:any)=>{
    sender:userId,
    content
   })
+
   await message.save()
     const currentUnreadCount = conversation.unreadCounts.get(friendId) ||0
     conversation.unreadCounts.set(friendId,currentUnreadCount+1)
@@ -196,12 +197,40 @@ export const conversationSendMessage=async(io:any,socket:Socket,data:any)=>{
       createAt:message.createdAt,
       read:message.read
     }
+    const updateConversation = await Conversation.findById(conversationId)
     const room = getChatRoom(userId,friendId)
-    
+    io.to(room).emit("conversation:new-message",{
+      conversationId:conversation.id,
+      message:messageData
+    })
+
+    io.to(room).emit("conversation:update-conversation",{
+        conversationId:conversation.id,
+      lastMessagePreview:updateConversation?.lastMessagePreview,
+      unreadCounts:{
+      [userId.toString()]:updateConversation?.unreadCounts.get(userId.toString()),
+      [friendId]:updateConversation?.unreadCounts.get(friendId)
+      }
+    })
   } catch (error) {
     console.error("Error sendingMessage:request", error);
         socket.emit("conversation:send-message:error", {error: "onversation:send-message:error"})
   }
 
+}
+
+export const conversationTyping = async(io:any,socket:Socket,data:any)=>{
+ try {
+  const {friendId,isTyping} = data;
+  const userId = socket.data.userId
+  if(userId.toString()==friendId) return
+  socket.to(friendId ).emit("conversation:update-typing",{
+    userId:userId.toString(),
+    isTyping
+  })
+ } catch (error) {
+  console.error("Error sendingMessage:request", error);
+        socket.emit("conversation:send-message:error", {error: "onversation:send-message:error"})
+ }
 }
 
