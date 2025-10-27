@@ -9,7 +9,7 @@ const ChatHeader: React.FC = () => {
         <div className="flex items-center space-x-3">
             <img src="https://avatar.iran.liara.run/public" alt="User image" className="size-10 rounded-full object-cover"/>
             <div>
-                <h2 className="font-semibold">{selectedConversation?.friend?.username}</h2>
+                <h2 className="font-semibold">{selectedConversation?.friend?.userName}</h2>
                 <p className={`${selectedConversation?.friend.online ? 'text-sm text-green-500' : 'text-sm text-gray-500'}`}>
                     {selectedConversation?.friend.online ? 'Online' : 'Offline'}
                 </p>

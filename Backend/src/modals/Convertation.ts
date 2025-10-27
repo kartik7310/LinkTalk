@@ -12,6 +12,7 @@ const conversationSchema = new mongoose.Schema({
     },
     lastMessagePreview: {
         content: String,
+         default: "",
         timestamp: Date
     },
     unreadCounts: {

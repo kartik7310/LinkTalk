@@ -3,9 +3,9 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export type User = {
-  id: string;
+  _id: string;
   email: string;
-  username: string;
+  userName: string;
   fullName: string;
   connectCode: string;
 };

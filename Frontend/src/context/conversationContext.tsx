@@ -50,106 +50,142 @@ export function ConversationsProvider({
   children,
 }: ConversationsProviderProps) {
   const { data, isLoading, isError } = useConversation();
-
-
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const { socket } = useSocketContext();
-useEffect(() => {
-  if (data) {
-      setConversations(Array.isArray(data) ? data : []); 
-  }
-}, [data]);
 
-  const handleConverstaionOnlinStatus = ({
+  // ✅ Initialize conversations from API
+  useEffect(() => {
+    if (data) setConversations(Array.isArray(data) ? data : []);
+  }, [data]);
+
+  // ✅ Handle friend online/offline status
+  const handleConversationOnlineStatus = ({
     friendId,
-    username,
+    userName,
     online,
   }: {
     friendId: string;
-    username: string;
+    userName: string;
     online: boolean;
   }) => {
-     setConversations((prev) => {
-
-        return prev.map((conversation) => {
-            if (conversation.friend.id === friendId) {
-                if (conversation.friend.online != online) {
-                    toast.info(`${username} is ${online ? 'online' : 'offline'}`);
-                }
-
-                return {...conversation, friend: {...conversation.friend, online}};
-            }
-
-            return conversation;
-        })
-        })
+    setConversations((prev) =>
+      prev.map((conversation) => {
+        if (conversation.friend._id === friendId) {
+          if (conversation.friend.online !== online) {
+            toast.info(`${userName} is ${online ? "online" : "offline"}`);
+          }
+          return {
+            ...conversation,
+            friend: { ...conversation.friend, online },
+          };
+        }
+        return conversation;
+      })
+    );
   };
- 
-  useEffect(() => {
-  console.log("Conversations updated:", conversations);
-}, [conversations]);
 
-  const handleConversation = (conversation:Conversation)=>{
-   console.log("conversation:request");
-   setConversations((prev:any)=>{
-    return [...prev,conversation];
-   })
-   toast.success(`You and ${conversation.friend.username} are now friends!`)
-   if(socket){
-    socket.disconnect()
-    socket.connect()
-   }
-   
-  }
+  const handleConversation = (conversation: Conversation) => {
+    console.log("conversation:request");
+    setConversations((prev: any) => [...prev, conversation]);
+    toast.success(`You and ${conversation.friend.userName} are now friends!`);
 
-const handleConversationUpdateUnreadCounts = (conversation: {conversationId: string, unreadCounts: Record<string, number>}) => {
-        console.log("conversation:update-unread-counts", conversation)
-        setConversations((prev) => {
-            return prev.map((c) => {
-                if (c.conversationId === conversation.conversationId) {
-                    return {...c, unreadCounts: conversation.unreadCounts}
-                } else {
-                    return c;
-                }
-            })
-        })
+    // optional reconnect safeguard
+    if (socket) {
+      socket.disconnect();
+      socket.connect();
     }
-    
-const handleConversationError=()=>toast.error("unable to add conversation!")
+  };
 
-const handleErrorConversationMarkAsRead=()=>toast.error("unable to add conversation!")
+  const handleConversationUpdateUnreadCounts = (conversation: {
+    conversationId: string;
+    unreadCounts: Record<string, number>;
+  }) => {
+    console.log("conversation:update-unread-counts", conversation);
+    setConversations((prev) =>
+      prev.map((c) =>
+        c.conversationId === conversation.conversationId
+          ? { ...c, unreadCounts: conversation.unreadCounts }
+          : c
+      )
+    );
+  };
 
- const handleConversationUpdate = (conversation: Pick<Conversation, "conversationId" | "lastMessage" | "unreadCounts">) => {
-        console.log(conversation);
-        setConversations((prev) => {
-            return prev.map((c) => {
-                if (c.conversationId === conversation.conversationId) {
-                    return {...c, lastMessage: conversation.lastMessage, unreadCounts: conversation.unreadCounts}
-                }
+  const handleConversationError = () =>
+    toast.error("Unable to add conversation!");
+  const handleErrorConversationMarkAsRead = () =>
+    toast.error("Unable to mark conversation as read!");
 
-                return c;
-            })
-        });
-    }
-  useEffect(() => {
-    socket?.on("conversation:online-status", handleConverstaionOnlinStatus);
-    socket?.on("conversation:request",handleConversation)
-    socket?.on("conversation:update-conversation",handleConversationUpdate)
-    socket?.on("conversation:request:error",handleConversationError)
-    socket?.on("conversation:mark-as-read:error",handleConversationUpdateUnreadCounts)
-    socket?.on("conversation:update-unread-counts",handleErrorConversationMarkAsRead)
+  const handleConversationUpdate = (
+    conversation: Pick<
+      Conversation,
+      "conversationId" | "lastMessage" | "unreadCounts"
+    >
+  ) => {
+    console.log("conversation:update-conversation", conversation);
+    setConversations((prev) =>
+      prev.map((c) =>
+        c.conversationId === conversation.conversationId
+          ? {
+              ...c,
+              lastMessage: conversation.lastMessage,
+              unreadCounts: conversation.unreadCounts,
+            }
+          : c
+      )
+    );
+  };
 
-    return () => {
-      socket?.off("conversation:online-status", handleConverstaionOnlinStatus);
-      socket?.off("conversation:request:error",handleConversationError)
-      socket?.off("conversation:update-unread-counts",handleErrorConversationMarkAsRead);
-      socket?.off("conversation:mark-as-read:error",handleConversationUpdateUnreadCounts)
-       socket?.off("conversation:update-conversation",handleConversationUpdate)
-    };
-  },[socket]);
+  // ✅ NEW: Handle real-time new message updates
+  const handleNewMessage = (data: {
+    conversationId: string;
+    message: { content: string; createdAt: string };
+    unreadCounts: Record<string, number>;
+  }) => {
+    console.log("conversation:new-message received:", data);
+
+    setConversations((prev) =>
+      prev.map((conversation) =>
+        conversation.conversationId === data.conversationId
+          ? {
+              ...conversation,
+              lastMessage: {
+                content: data.message.content,
+                timestamp: new Date(data.message.createdAt),
+              },
+              unreadCounts: data.unreadCounts,
+            }
+          : conversation
+      )
+    );
+  };
+
+  // ✅ Register all socket listeners
+useEffect(() => {
+  if (!socket) return;
+
+  socket.on("conversation:online-status", handleConversationOnlineStatus);
+  socket.on("conversation:request", handleConversation);
+  socket.on("conversation:update-conversation", handleConversationUpdate);
+  socket.on("conversation:new-message", handleNewMessage);
+  socket.on("conversation:request:error", handleConversationError);
+  socket.on("conversation:mark-as-read:error", handleErrorConversationMarkAsRead);
+  socket.on("conversation:update-unread-counts", handleConversationUpdateUnreadCounts);
+
+  return () => {
+    socket.off("conversation:online-status", handleConversationOnlineStatus);
+    socket.off("conversation:request", handleConversation);
+    socket.off("conversation:update-conversation", handleConversationUpdate);
+    socket.off("conversation:new-message", handleNewMessage);
+    socket.off("conversation:request:error", handleConversationError);
+    socket.off("conversation:mark-as-read:error", handleErrorConversationMarkAsRead);
+    socket.off("conversation:update-unread-counts", handleConversationUpdateUnreadCounts);
+  };
+}, [socket]);
+
+
   const filteredConversations = conversations?.filter((conversation) =>
-    conversation.friend.username
+    conversation.friend.userName
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
@@ -169,4 +205,3 @@ const handleErrorConversationMarkAsRead=()=>toast.error("unable to add conversat
     </ConversationsContext.Provider>
   );
 }
-

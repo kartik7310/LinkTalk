@@ -42,7 +42,7 @@ export function useMessageListen(
                 }
             )
 
-            if (payload.message.sender._id !== user?.id) {
+            if (payload.message.sender._id !== user?._id) {
                 try {
                     sound.currentTime = 0;
                     sound.play();

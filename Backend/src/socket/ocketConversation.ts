@@ -131,7 +131,7 @@ export const conversationMarkAsRead =async(io:any,socket:Socket,data:any)=>{
      socket.emit("conversation:mark:as-read:error",{error:"no conversation found"})
     return
   } 
-  console.log("cosddsg",conversation);
+  
   await Conversation.findByIdAndUpdate(
   conversation._id,
   { $set: { [`unreadCounts.${userId.toString()}`]: 0 } },
@@ -154,70 +154,94 @@ export const conversationMarkAsRead =async(io:any,socket:Socket,data:any)=>{
   }
 }
 
-export const conversationSendMessage=async(io:any,socket:Socket,data:any)=>{
+export const conversationSendMessage = async (io: any, socket: Socket, data: any) => {
   try {
- const {conversationId,friendId,content} = data;
+    console.log("📩 Data from client:", data);
 
-  const userId =  socket.data.userId ;
-  const user = socket.data
-  const friendship = await FriendsShip.findOne({
-    $or:[
-      {requester:userId,recipient:friendId},
-      {requester:friendId,recipient:userId}
-    ]
-  })
-  if(!friendship){
-    socket.emit("conversation:send-message:error",{error:"no friendship found"})
-    return
-  }
-  const conversation = await Conversation.findById(conversationId);
-  if(!conversation){
-     socket.emit("conversation:send-message:error",{error:"no conversation found"})
-    return
-  } 
+    const { conversationId, friendId, content } = data;
+    const userId = socket.data.userId;
+    const user = socket.data;
 
-  const message = new Message({
-  conversationId:conversation.id,
-   sender:userId,
-   content
-  })
+    // ✅ 1. Check if users are friends
+    const friendship = await FriendsShip.findOne({
+      $or: [
+        { requester: userId, recipient: friendId },
+        { requester: friendId, recipient: userId },
+      ],
+    });
 
-  await message.save()
-    const currentUnreadCount = conversation.unreadCounts.get(friendId) ||0
-    conversation.unreadCounts.set(friendId,currentUnreadCount+1)
-    await conversation.save()
+    if (!friendship) {
+      socket.emit("conversation:send-message:error", { error: "No friendship found" });
+      return;
+    }
 
+    // ✅ 2. Find or create conversation
+    let conversation =
+      (conversationId && (await Conversation.findById(conversationId))) ||
+      (await Conversation.findOne({ participants: { $all: [userId, friendId] } }));
+
+    if (!conversation) {
+      conversation = new Conversation({
+        participants: [userId, friendId],
+        unreadCounts: new Map(),
+        lastMessagePreview: "",
+      });
+      await conversation.save();
+    }
+
+    // ✅ 3. Create and save the message
+    const message = new Message({
+      conversation: conversation._id,
+      sender: userId,
+      content,
+    });
+    await message.save();
+
+    // ✅ 4. Update conversation unread counts & last preview
+    const currentUnreadCount = conversation.unreadCounts.get(friendId) || 0;
+    conversation.unreadCounts.set(friendId, currentUnreadCount + 1);
+    conversation.lastMessagePreview = content;
+    await conversation.save();
+
+    // ✅ 5. Prepare message data for client
     const messageData = {
-      _id:message.id,
-      sender:{
-        _id:userId.toString(),
-        userName:user.userName
+      _id: message.id,
+      sender: {
+        _id: userId.toString(),
+        username: user.username || user.userName, // handle both
       },
       content,
-      createAt:message.createdAt,
-      read:message.read
-    }
-    const updateConversation = await Conversation.findById(conversationId)
-    const room = getChatRoom(userId,friendId)
-    io.to(room).emit("conversation:new-message",{
-      conversationId:conversation.id,
-      message:messageData
-    })
+      createdAt: message.createdAt,
+      read: message.read,
+    };
 
-    io.to(room).emit("conversation:update-conversation",{
-        conversationId:conversation.id,
-      lastMessagePreview:updateConversation?.lastMessagePreview,
-      unreadCounts:{
-      [userId.toString()]:updateConversation?.unreadCounts.get(userId.toString()),
-      [friendId]:updateConversation?.unreadCounts.get(friendId)
-      }
-    })
-  } catch (error) {
-    console.error("Error sendingMessage:request", error);
-        socket.emit("conversation:send-message:error", {error: "onversation:send-message:error"})
+    const updatedConversation = await Conversation.findById(conversation.id);
+    const room = getChatRoom(userId, friendId);
+
+    // ✅ 6. Emit message in real-time to both users
+    io.to(room).emit("conversation:new-message", {
+      conversationId: conversation.id,
+      message: messageData,
+    });
+   console.log("room",room);
+   
+    // ✅ 7. Emit conversation update to refresh sidebar/list UI
+    io.to(room).emit("conversation:update-conversation", {
+      conversationId: conversation.id,
+      lastMessagePreview: updatedConversation?.lastMessagePreview,
+      unreadCounts: {
+        [userId.toString()]: updatedConversation?.unreadCounts.get(userId.toString()) || 0,
+        [friendId]: updatedConversation?.unreadCounts.get(friendId) || 0,
+      },
+    });
+
+  } catch (error: any) {
+    console.error("❌ Error in conversationSendMessage:", error);
+    socket.emit("conversation:send-message:error", {
+      error: error.message || "conversation:send-message:error",
+    });
   }
-
-}
+};
 
 export const conversationTyping = async(io:any,socket:Socket,data:any)=>{
  try {

@@ -94,7 +94,7 @@ export const ConversationService = {
           unreadCounts: conversation?.unreadCounts || {},
           friend: {
             id: friend._id.toString(),
-            username: friend.userName,
+            userName: friend.userName,
             fullName: friend.fullName,
             connectCode: friend.connectCode,
             online:await RedisService.isUserOnline(friend._id.toString())

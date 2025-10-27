@@ -12,7 +12,7 @@ const ConversationItem: React.FC<Conversation> = ({
     
     const unreadMessages = () =>
         unreadCounts && user && friend
-            ? (unreadCounts[user.id] || 0) > 0 || (unreadCounts[friend.id] || 0) > 0
+            ? (unreadCounts[user._id] || 0) > 0 || (unreadCounts[friend._id] || 0) > 0
             : false;
 
     let displayTime = '';
@@ -61,7 +61,7 @@ const ConversationItem: React.FC<Conversation> = ({
 
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center">
-                    <h2 className="font-semibold truncate text-sm">{friend?.username ?? "Unknown"}</h2>
+                    <h2 className="font-semibold truncate text-sm">{friend?.userName ?? "Unknown"}</h2>
                     {lastMessage?.timestamp && (
                         <span className="text-xs text-gray-500">{displayTime}</span>
                     )}
@@ -77,9 +77,9 @@ const ConversationItem: React.FC<Conversation> = ({
                     >
                         {lastMessage?.content ?? ''}
                     </p>
-                    {user && unreadCounts?.[user.id] > 0 && (
+                    {user && unreadCounts?.[user._id] > 0 && (
                         <div className="bg-sky-500 ml-2 text-xs text-white rounded-full size-5 flex items-center justify-center flex-shrink-0">
-                            {unreadCounts[user.id]}
+                            {unreadCounts[user._id]}
                         </div>
                     )}
                 </div>
